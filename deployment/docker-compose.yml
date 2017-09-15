@@ -1,0 +1,13 @@
+# Docker system composition descriptor
+# Author: Sebastien Mosser
+# Version: 1.0
+
+version: '3'
+
+services:
+  # MongoDB database
+  database:
+    image: mongo:3.0
+    container_name: tcs_mongo
+    volumes:
+      - ./mongo_data:/data/db
