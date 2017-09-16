@@ -1,13 +1,39 @@
-# Docker system composition descriptor
-# Author: Sebastien Mosser
-# Version: 1.0
+########################################
+##      Tax Computation System        ##
+########################################
+# Docker system composition descriptor #
+########################################
+# Author: Sebastien Mosser             #
+# Version: 1.0                         #
+########################################
 
 version: '3'
 
 services:
-  # MongoDB database
-  database:
-    image: mongo:3.0
+
+  database:                       # MongoDB database
     container_name: tcs_mongo
+    image: mongo:3.0
     volumes:
-      - ./mongo_data:/data/db
+      - "./mongo_data:/data/db"
+    ports:
+      - "27017:27017"
+
+  rpc:                            # Tax Computation, on port 9090
+    container_name: tcs_rpc
+    image: petitroll/tcs-rpc
+    ports:
+      - "9090:8080"
+
+
+  cadvisor:                       # Container monitoring, on port 8090
+    container_name: tcs_monitoring
+    image: google/cadvisor
+    ports:
+      - "8090:8080"
+    volumes:
+      - "/:/rootfs:ro"
+      - "/var/run:/var/run:rw"
+      - "/sys:/sys:ro"
+      - "/var/lib/docker/:/var/lib/docker:ro"
+      - "/dev/disk/:/dev/disk:ro"
