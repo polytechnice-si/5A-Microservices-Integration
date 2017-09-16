@@ -16,3 +16,4 @@ mvn -q clean package
 # Build docker images
 build rpc       petitroll/tcs-rpc
 build resource  petitroll/tcs-rest
+build document  petitroll/tcs-doc

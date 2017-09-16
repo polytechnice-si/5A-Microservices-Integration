@@ -6,7 +6,7 @@ import javax.jws.WebService;
 
 import tcs.data.*;
 
-@WebService(name="TaxComputation")
+@WebService(name="TaxComputation", targetNamespace = "http://informatique.polytech.unice.fr/soa1/cookbook/")
 public interface TaxComputationService {
 
 

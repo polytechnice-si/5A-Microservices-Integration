@@ -1,62 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
 			     http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-	<groupId>fr.unice.polytech.esb</groupId>
-	<artifactId>services</artifactId>
-	<version>1.0</version>
-	<packaging>pom</packaging>
-	<name>ESB :: Services</name>
+    <groupId>fr.unice.polytech.esb</groupId>
+    <artifactId>services</artifactId>
+    <version>1.0</version>
+    <packaging>pom</packaging>
+    <name>ESB :: Services</name>
 
-	<modules>
-		<module>rpc</module>
-		<module>resource</module>
-	</modules>
+    <modules>
+        <module>rpc</module>
+        <module>resource</module>
+        <module>document</module>
+    </modules>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<versions.tomee>7.0.3</versions.tomee>
-		<versions.maven.compiler>3.6.1</versions.maven.compiler>
-		<versions.java>1.8</versions.java>
-	</properties>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <versions.tomee>7.0.3</versions.tomee>
+        <versions.maven.compiler>3.6.1</versions.maven.compiler>
+        <versions.java>1.8</versions.java>
+    </properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.tomee</groupId>
-			<artifactId>tomee-embedded</artifactId>
-			<version>${versions.tomee}</version>
-			<scope>provided</scope>
-		</dependency>
-	</dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.tomee</groupId>
+            <artifactId>tomee-embedded</artifactId>
+            <version>${versions.tomee}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 
-	<build>
-		<defaultGoal>package</defaultGoal>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${versions.maven.compiler}</version>
-				<configuration>
-					<source>${versions.java}</source>
-					<target>${versions.java}</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.tomee.maven</groupId>
-				<artifactId>tomee-maven-plugin</artifactId>
-				<version>${versions.tomee}</version>
-				<configuration>
-					<!-- From TomEE to TomEE+ to support the web services stack -->
-					<tomeeClassifier>plus</tomeeClassifier>
-					<args>-Xmx512m -XX:PermSize=256m</args>
-					<deployOpenEjbApplication>true</deployOpenEjbApplication>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+    <build>
+        <defaultGoal>package</defaultGoal>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${versions.maven.compiler}</version>
+                <configuration>
+                    <source>${versions.java}</source>
+                    <target>${versions.java}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.tomee.maven</groupId>
+                <artifactId>tomee-maven-plugin</artifactId>
+                <version>${versions.tomee}</version>
+                <configuration>
+                    <!-- From TomEE to TomEE+ to support the web services stack -->
+                    <tomeeClassifier>plus</tomeeClassifier>
+                    <args>-Xmx512m -XX:PermSize=256m</args>
+                    <deployOpenEjbApplication>true</deployOpenEjbApplication>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

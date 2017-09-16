@@ -54,7 +54,7 @@ We consider here a simple case study, the _Tax Computation Service_. The key ide
   1. Service development
     * Creating the Tax Computation System as an RPC service;
     * Creating the Anonymous Generator as a Resource service;
-    * Creating the Snail Mail processor as a Document service.
+    * Creating the Citizen Registry as a Document service.
   2. Service deployment
     * Using containers to deploy services;
     * Composing containers into a global system.

@@ -16,30 +16,37 @@ version: '3'
 
 services:
 
-  database:                       # MongoDB database
-    container_name: tcs_mongo
+  tax-computation:                # Tax Computation, on port 9090
+    container_name: tcs-computation
+    image: petitroll/tcs-rpc
+    ports:
+      - "9090:8080"
+
+  id-generator:                   # ID generators, on port 9070
+    container_name: tcs-generator
+    image: petitroll/tcs-rest
+    ports:
+      - "9070:8080"
+
+  citizen-registry:               # Citizen registry, on port 9080
+    container_name: tcs-citizens
+    image: petitroll/tcs-doc
+    depends_on:
+      - database
+    ports:
+      - "9080:8080"
+
+  database:                       # MongoDB database, on port 27017
+    container_name: tcs-database
     image: mongo:3.0
     volumes:
       - "./mongo_data:/data/db"
     ports:
       - "27017:27017"
 
-  rpc:                            # Tax Computation, on port 9090
-    container_name: tcs_rpc
-    image: petitroll/tcs-rpc
-    ports:
-      - "9090:8080"
-
-  resources:                      # ID generators, on port 9070
-    container_name: tcs_rest
-    image: petitroll/tcs-rest
-    ports:
-      - "9070:8080"
-
-
   cadvisor:                       # Container monitoring, on port 8090
-    container_name: tcs_monitoring
-    image: google/cadvisor
+    container_name: tcs-monitoring
+    image: petitroll/cadvisor     # filesystem error in the official image ... fixed in 'monitoring'
     ports:
       - "8090:8080"
     volumes:
