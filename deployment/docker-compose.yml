@@ -7,6 +7,11 @@
 # Version: 1.0                         #
 ########################################
 
+## Start the system with "docker-compose up -d"
+## Shutdown it with "docker-compose down"
+## To clean your docker install: "docker system prune"
+## To purge your docker install: "docker system prune -a"
+
 version: '3'
 
 services:
@@ -25,6 +30,12 @@ services:
     ports:
       - "9090:8080"
 
+  resources:                      # ID generators, on port 9070
+    container_name: tcs_rest
+    image: petitroll/tcs-rest
+    ports:
+      - "9070:8080"
+
 
   cadvisor:                       # Container monitoring, on port 8090
     container_name: tcs_monitoring
@@ -36,4 +47,3 @@ services:
       - "/var/run:/var/run:rw"
       - "/sys:/sys:ro"
       - "/var/lib/docker/:/var/lib/docker:ro"
-      - "/dev/disk/:/dev/disk:ro"
