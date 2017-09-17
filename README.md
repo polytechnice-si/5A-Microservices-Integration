@@ -26,7 +26,6 @@
   * Monitoring:
     * ESB: [HawtIO](http://hawt.io/)
     * Services: [cAdvisor](https://github.com/google/cadvisor)  
-  * Continuous Integration: [Travis](https://travis-ci.org/)  
 
 ## Case study: The Tax Computation Service
 
