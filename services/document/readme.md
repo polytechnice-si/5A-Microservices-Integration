@@ -49,7 +49,7 @@ The services follows a document approach, and handle the following events:
 
 ```json
 {
-  "event": "REMOVE",
+  "event": "DELETE",
   "ssn": "1234567890"
 }
 ```
