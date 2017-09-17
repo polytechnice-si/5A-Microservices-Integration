@@ -7,33 +7,35 @@ public class Citizen {
 
 
     private String ssn;
-    private String lastName;
     private String firstName;
-    private String gender;
-    private String birthDate;
+    private String lastName;
+    private String zipcode;
+    private String address;
+    private int birthYear;
 
     @MongoObjectId
     String _id;
-
 
     public Citizen() {}
 
     public Citizen(JSONObject data) {
         this.ssn = data.getString("ssn");
-        this.birthDate = data.getString("birth_date");
+        this.birthYear = data.getInt("birth_year");
         this.lastName = data.getString("last_name");
         this.firstName = data.getString("first_name");
-        this.gender = data.getString("gender");
+        this.zipcode = data.getString("zip_code");
+        this.address = data.getString("address");
     }
 
 
-    public JSONObject toJson() {
+    JSONObject toJson() {
         return new JSONObject()
                 .put("ssn", ssn)
-                .put("birth_date", birthDate)
+                .put("birth_year", birthYear)
                 .put("last_name", lastName)
                 .put("first_name", firstName)
-                .put("gender", gender);
+                .put("zip_code", zipcode)
+                .put("address", address);
     }
 
 }

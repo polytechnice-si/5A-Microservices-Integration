@@ -28,8 +28,9 @@ The services follows a document approach, and handle the following events:
     "last_name": "Doe",
     "first_name": "John",
     "ssn": "1234567890",
-    "gender": "M",
-    "birth_date": "01/01/1970"
+    "zip_code": "06543",
+    "address": "nowhere, middle of",
+    "birth_year": "1970"
   }
 }
 ```
