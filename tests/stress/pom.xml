@@ -15,7 +15,6 @@
     </parent>
 
     <properties>
-        <cxf.version>3.1.10</cxf.version>
         <gatling.version>2.3.0</gatling.version>
         <gatling-plugin.version>2.2.4</gatling-plugin.version>
         <scala-maven-plugin.version>3.2.2</scala-maven-plugin.version>
@@ -28,6 +27,11 @@
             <version>${gatling.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>2.12.3</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -36,41 +40,31 @@
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
                 <version>${scala-maven-plugin.version}</version>
-            </plugin>
-            <plugin>
-                <groupId>io.gatling</groupId>
-                <artifactId>gatling-maven-plugin</artifactId>
-                <version>${gatling-plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
-                            <goal>execute</goal>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.cxf</groupId>
-                <artifactId>cxf-codegen-plugin</artifactId>
-                <version>${cxf.version}</version>
+                <groupId>io.gatling</groupId>
+                <artifactId>gatling-maven-plugin</artifactId>
+                <version>${gatling-plugin.version}</version>
+                <configuration>
+                    <disableCompiler>true</disableCompiler>
+                    <configFolder>src/test/resources</configFolder>
+                    <dataFolder>src/test/resources/data</dataFolder>
+                    <resultsFolder>src/test/results</resultsFolder>
+                    <simulationsFolder>src/test/simulations</simulationsFolder>
+                    <runMultipleSimulations>true</runMultipleSimulations>
+                </configuration>
                 <executions>
                     <execution>
-                        <id>generate-sources</id>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <sourceRoot>${basedir}/src/main/java/</sourceRoot>
-                            <wsdlOptions>
-                                <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/ExternalTaxComputerService.wsdl</wsdl>
-                                    <extraargs>
-                                        <extraarg>-p</extraarg>
-                                        <extraarg>http://informatique.polytech.unice.fr/soa1/cookbook/=stubs.tcs</extraarg>
-                                    </extraargs>
-                                </wsdlOption>
-                            </wsdlOptions>
-                        </configuration>
                         <goals>
-                            <goal>wsdl2java</goal>
+                            <goal>execute</goal>
                         </goals>
                     </execution>
                 </executions>
