@@ -1,7 +1,7 @@
 #!/bin/sh
 
-#PUSH=true
-PUSH=false
+PUSH=true
+#PUSH=false
 
 build() { # $1: directory, $2: image_name
   cd $1

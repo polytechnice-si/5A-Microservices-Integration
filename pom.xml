@@ -4,16 +4,25 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
 			     http://maven.apache.org/maven-v4_0_0.xsd">
 
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>fr.unice.polytech.esb</groupId>
-  <artifactId>root</artifactId>
-  <version>1.0</version>
-  <packaging>pom</packaging>
-  <name>ESB :: (Micro)Services and Integration</name>
+    <groupId>fr.unice.polytech.esb</groupId>
+    <artifactId>root</artifactId>
+    <version>1.0</version>
+    <packaging>pom</packaging>
+    <name>ESB :: (Micro)Services and Integration</name>
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <versions.maven.compiler>3.6.1</versions.maven.compiler>
+        <versions.java>1.8</versions.java>
+    </properties>
 
-  <modules>
-    <module>services</module>
-  </modules>
+    <modules>
+        <module>services</module>
+        <module>tests</module>
+    </modules>
 
 </project>
