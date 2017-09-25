@@ -35,7 +35,11 @@ The `Registry` service is use to store citizens inside a global registry (_Folke
 
 ### Implementing the service
 
-The service produces `application/json` data, and cosumes it as well. It defines a single route named `registry`, with a single method `process`.
+The service produces `application/json` data, and cosumes it as well. It defines a single route named `registry`, with a single method `process`. The request is posted to the `registry` endpoint, accepting a body made of a JSON document:
+
+```json
+{ "event": "REGISTER", ...}
+```
 
 ```java
 @Path("/registry")
