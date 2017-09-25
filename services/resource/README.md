@@ -1,4 +1,4 @@
-# Creating a Document service
+# Creating a Resource service
 
   * Author: Sébastien Mosser [(email)](mosser@i3s.unice.fr)
   * Version: 2017.09
@@ -9,7 +9,7 @@
 We implement this service using the Java language, and use Maven to support the project description. The descriptor is located in the `pom.xml` file, and inherits its content from the global one described in the `service` directory (mainly the application server configuration).  The file system hierarchy is the following:
 
 ```
-Azrael:document mosser$ tree .
+azrael:resource mosser$ tree .
 .
 ├── README.md
 ├── pom.xml

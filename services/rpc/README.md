@@ -6,7 +6,7 @@
 
 ## Creating the Maven project
 
-We implement this service using the Java language, and use Maven to support the project description. The descriptor is located in the `pom.xml` file, and inherits its content from the global one described in the `service` directory.  The file system hierarchy is the following:
+We implement this service using the Java language, and use Maven to support the project description. The descriptor is located in the `pom.xml` file, and inherits its content from the global one described in the `service` directory (mainly the application server configuration).  The file system hierarchy is the following:
 
 ```
 azrael:rpc mosser$ tree .
@@ -26,7 +26,7 @@ azrael:rpc mosser$ tree .
 
 ### Declaring the interface
 
-The service declare 2 operations in the [TaxComputationService](https://github.com/polytechnice-si/5A-Microservices-Integration/blob/master/services/rpc/src/main/java/tcs/service/TaxComputationService.java) interface, each one associated to a computation method for the Norwegian tax system.
+The service declares 2 operations in the [TaxComputationService](https://github.com/polytechnice-si/5A-Microservices-Integration/blob/master/services/rpc/src/main/java/tcs/service/TaxComputationService.java) interface, each one associated to a computation method for the Norwegian tax system.
 
 ```java
 @WebService(name="TaxComputation", 

@@ -1,7 +1,7 @@
 # SOA, Microservices & Integration
 
   * Author: Sébastien Mosser [(email)](mosser@i3s.unice.fr)
-  * Version: 2017.08 
+  * Version: 2017.09 
   * Reviewer: [Mireille Blay-Fornarino](blay@i3s.unice.fr)
 
 ## Technological Stack
@@ -51,7 +51,7 @@ We consider here a simple case study, the _Tax Computation Service_. The key ide
 ### Phase #1: Deploying services
 
   * Service development
-    * [ ] Creating the Tax Computation System as an RPC service;
+    * [x] Creating the Tax Computation System as an RPC service;
     * [ ] Creating the Anonymous Generator as a Resource service;
     * [ ] Creating the Citizen Registry as a Document service.
   * Service deployment
