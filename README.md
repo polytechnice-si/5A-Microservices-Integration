@@ -59,8 +59,8 @@ We consider here a simple case study, the _Tax Computation Service_. The key ide
     * [x] [Composing containers into a global system](https://raw.githubusercontent.com/polytechnice-si/5A-Microservices-Integration/master/deployment/README.md).
     * [x] [Monitoring containers](https://raw.githubusercontent.com/polytechnice-si/5A-Microservices-Integration/master/deployment/Monitoring.md)
   * Service testing
-    * [x] Acceptance testing using scenarios](https://github.com/polytechnice-si/5A-Microservices-Integration/blob/master/tests/acceptation/README.md)
-    * [x] Stress testing](https://github.com/polytechnice-si/5A-Microservices-Integration/blob/master/tests/stress/README.md)
+    * [x] [Acceptance testing using scenarios](https://github.com/polytechnice-si/5A-Microservices-Integration/blob/master/tests/acceptation/README.md)
+    * [x] [Stress testing](https://github.com/polytechnice-si/5A-Microservices-Integration/blob/master/tests/stress/README.md)
 
 ### Phase #2: Integrating services
 
