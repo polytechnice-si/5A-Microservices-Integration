@@ -24,40 +24,65 @@ Azrael:document mosser$ tree .
 
 ## Developing the service
 
-The `Generator` service is use to make tax computation anonymous. It creates counters, and generate unique identifiers based on these counters. The system is transient, _i.e._, there is no database associated to the system. 
+The `Registry` service is use to store citizens inside a global registry (_Folkeregisteret_). It follows a document approach, and handle the following events:
+
+  - `REGISTER`: registers a citizen;
+  - `RETRIEVE`: get a citizen based on his/her social security number.
+  - `DELETE`: deletes a citizen;
+  - `LIST`: lists citizens with matching a given regular expression;
+  - `DUMP`: lists all citizens;
+  - `PURGE`: delete the contents of the registry (use with caution);
 
 ### Implementing the service
 
-The service produces `application/json` data. It defines several routes under the `generator` prefix, to create generators, get all available generators, generate a new identifier or delete a generator.
+The service produces `application/json` data, and cosumes it as well. It defines a single route named `registry`, with a single method `process`.
 
 ```java
-@Path("/generators")
+@Path("/registry")
 @Produces(MediaType.APPLICATION_JSON)
-public class GeneratorService {
+public class Registry {
 
-	@POST
-	@Consumes(MediaType.TEXT_PLAIN)
-	public Response createNewGenerator(String name) { ... }
-
-	@GET
-	public Response getAvailableGenerators() { ... }
-
-	@Path("/{name}")
-	@GET
-	public Response generateIdentifier(@PathParam("name") String name) { ... }
-
-	@Path("/{name}")
-	@DELETE
-	public Response deleteGenerator(@PathParam("name") String name) { ... }
-
+  @POST
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response process(String input) {
+    JSONObject obj = new JSONObject(input);
+    try {
+      switch (EVENT.valueOf(obj.getString("event"))) {
+          // Dispatch code goes here
+      }
+    } catch(Exception e) {
+      JSONObject error = new JSONObject().put("error", e.toString());
+      return Response.status(400).entity(error.toString(INDENT_FACTOR)).build();
+    }
+    return null;
+  }
 }
-``` 
+```
 
-The service is implemented in the [GeneratorService](https://github.com/polytechnice-si/5A-Microservices-Integration/blob/master/services/resource/src/main/java/gen/GeneratorService.java) class.
+The service is implemented in the [Registry](https://github.com/polytechnice-si/5A-Microservices-Integration/blob/master/services/document/src/main/java/registry/Registry.java) class.
+
+### Business code
+
+The Business code is implemented in the [Handler](https://github.com/polytechnice-si/5A-Microservices-Integration/blob/master/services/document/src/main/java/registry/Handler.java) class. It relies on a MongoDB database. For example, to register a citizen inside the registry
+
+```java
+static JSONObject register(JSONObject input) {
+  MongoCollection citizens = getCitizens();
+  Citizen data = new Citizen(input.getJSONObject("citizen"));
+  citizens.insert(data);
+  return new JSONObject().put("inserted", true).put("citizen",data.toJson());
+}
+```
+
+The dispatch code is straightforward:
+
+```java
+case REGISTER:
+  return Response.ok().entity(Handler.register(obj).toString()).build();
+```
 
 ## Starting the service
 
-  * Compiling: `mvn clean package` will create the file `target/tcs-service-rest.war`
+  * Compiling: `mvn clean package` will create the file `target/tcs-service-document.war`
   * Running: `mvn tomee:run` will deploy the created `war` inside a TomEE+ server, available on `localhost:8080`
-  * The service is available at [http://localhost:8080/tcs-service-rest/generators](http://localhost:8080/tcs-service-rest/generators)
-
+  * The service is available at [http://localhost:8080/tcs-service-document/registry](http://localhost:8080/tcs-service-document/registry)
