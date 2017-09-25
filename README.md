@@ -51,16 +51,16 @@ We consider here a simple case study, the _Tax Computation Service_. The key ide
 ### Phase #1: Deploying services
 
   * Service development
-    * [x] Creating the Tax Computation System as an RPC service;
-    * [ ] Creating the Anonymous Generator as a Resource service;
-    * [ ] Creating the Citizen Registry as a Document service.
+    * [x] [Creating the Tax Computation System as an RPC service](https://github.com/polytechnice-si/5A-Microservices-Integration/blob/master/services/rpc/README.md);
+    * [x] [Creating the Anonymous Generator as a Resource service](https://github.com/polytechnice-si/5A-Microservices-Integration/blob/master/services/resource/README.md);
+    * [x] [Creating the Citizen Registry as a Document service](https://github.com/polytechnice-si/5A-Microservices-Integration/blob/master/services/document/readme.md).
   * Service deployment
-    * [ ] Using containers to deploy services;
-    * [ ] Composing containers into a global system.
-    * [ ] Monitoring containers
+    * [x] [Using containers to deploy services](https://raw.githubusercontent.com/polytechnice-si/5A-Microservices-Integration/master/deployment/Docker.md);
+    * [x] [Composing containers into a global system](https://raw.githubusercontent.com/polytechnice-si/5A-Microservices-Integration/master/deployment/README.md).
+    * [x] [Monitoring containers](https://raw.githubusercontent.com/polytechnice-si/5A-Microservices-Integration/master/deployment/Monitoring.md)
   * Service testing
-    * [ ] Acceptance testing using scenarios
-    * [ ] Stress testing
+    * [x] Acceptance testing using scenarios](https://github.com/polytechnice-si/5A-Microservices-Integration/blob/master/tests/acceptation/README.md)
+    * [x] Stress testing](https://github.com/polytechnice-si/5A-Microservices-Integration/blob/master/tests/stress/README.md)
 
 ### Phase #2: Integrating services
 
