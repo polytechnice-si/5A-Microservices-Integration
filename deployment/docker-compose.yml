@@ -31,6 +31,9 @@ services:
   citizen-registry:               # Citizen registry, on port 9080
     container_name: tcs-citizens
     image: petitroll/tcs-doc
+    environment:
+      - db_host=tcs-database
+      - db_port=27017
     depends_on:
       - database
     ports:
