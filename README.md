@@ -32,9 +32,9 @@ We consider here a simple case study, the _Tax Computation Service_. The key ide
     * [x] [Creating the Anonymous Generator as a Resource service](https://github.com/polytechnice-si/5A-Microservices-Integration/blob/master/services/resource/README.md);
     * [x] [Creating the Citizen Registry as a Document service](https://github.com/polytechnice-si/5A-Microservices-Integration/blob/master/services/document/readme.md).
   * Service deployment
-    * [x] [Using containers to deploy services](https://raw.githubusercontent.com/polytechnice-si/5A-Microservices-Integration/master/deployment/Docker.md);
-    * [x] [Composing containers into a global system](https://raw.githubusercontent.com/polytechnice-si/5A-Microservices-Integration/master/deployment/README.md).
-    * [x] [Monitoring containers](https://raw.githubusercontent.com/polytechnice-si/5A-Microservices-Integration/master/deployment/Monitoring.md)
+    * [x] [Using containers to deploy services](https://github.com/polytechnice-si/5A-Microservices-Integration/blob/master/deployment/Docker.md);
+    * [x] [Composing containers into a global system](https://github.com/polytechnice-si/5A-Microservices-Integration/blob/master/deployment/README.md).
+    * [x] [Monitoring containers](https://github.com/polytechnice-si/5A-Microservices-Integration/tree/master/monitoring/README.md)
   * Service testing
     * [x] [Acceptance testing using scenarios](https://github.com/polytechnice-si/5A-Microservices-Integration/blob/master/tests/acceptation/README.md)
     * [x] [Stress testing](https://github.com/polytechnice-si/5A-Microservices-Integration/blob/master/tests/stress/README.md)
