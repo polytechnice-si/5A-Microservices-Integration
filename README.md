@@ -4,29 +4,6 @@
   * Version: 2017.09 
   * Reviewer: [Mireille Blay-Fornarino](blay@i3s.unice.fr)
 
-## Technological Stack
-
-  * Service Development: 
-    * Application server: [TomEE+](http://openejb.apache.org/apache-tomee.html)
-    * REST-based service stack: JAX-RS
-    * SOAP-based service stack: JAX-WS
-  * Integration: 
-    * Enterprise Service Bus: [Apache Service Mix](http://servicemix.apache.org/) (7.0.1)
-    * Message Broker: [Apache ActiveMQ](http://activemq.apache.org/)
-    * Routing: [Apache Camel](http://camel.apache.org/) (2.19.2)
-  * Storage: 
-    * Database: [MongoDB](https://www.mongodb.com) (3.4)
-    * Java Mapping: [Jongo](http://jongo.org/)
-  * Deployment: 
-    * [Docker Community Engine](https://www.docker.com/community-edition) (17.07.0-rc1)
-    * [Docker Compose](https://docs.docker.com/compose/) (1.15.0)
-  * Testing:
-    * Acceptance testing: [Cucumber](https://cucumber.io/) 
-    * Stress testing: [Gatling](http://gatling.io/)
-  * Monitoring:
-    * ESB: [HawtIO](http://hawt.io/)
-    * Services: [cAdvisor](https://github.com/google/cadvisor)  
-
 ## Case study: The Tax Computation Service
 
 We consider here a simple case study, the _Tax Computation Service_. The key idea is simple: creating a service-based architecture to support the computation of income taxes for a relatively small country (_i.e._, Norway, 5 millions inhabitants).
@@ -70,4 +47,26 @@ We consider here a simple case study, the _Tax Computation Service_. The key ide
   * Legacy integration
     * [ ] Leveraging adapters to integrate legacy systems together
 
+## Technological Stack
+
+  * Service Development: 
+    * Application server: [TomEE+](http://openejb.apache.org/apache-tomee.html)
+    * REST-based service stack: JAX-RS
+    * SOAP-based service stack: JAX-WS
+  * Integration: 
+    * Enterprise Service Bus: [Apache Service Mix](http://servicemix.apache.org/) (7.0.1)
+    * Message Broker: [Apache ActiveMQ](http://activemq.apache.org/)
+    * Routing: [Apache Camel](http://camel.apache.org/) (2.19.2)
+  * Storage: 
+    * Database: [MongoDB](https://www.mongodb.com) (3.4)
+    * Java Mapping: [Jongo](http://jongo.org/)
+  * Deployment: 
+    * [Docker Community Engine](https://www.docker.com/community-edition) (17.07.0-rc1)
+    * [Docker Compose](https://docs.docker.com/compose/) (1.15.0)
+  * Testing:
+    * Acceptance testing: [Cucumber](https://cucumber.io/) 
+    * Stress testing: [Gatling](http://gatling.io/)
+  * Monitoring:
+    * ESB: [HawtIO](http://hawt.io/)
+    * Services: [cAdvisor](https://github.com/google/cadvisor)  
 
