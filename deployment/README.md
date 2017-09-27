@@ -125,7 +125,7 @@ In the compose file, the environment variables are set using `environment` entri
 
 ```yaml
 citizen-registry:             
-	container_name: tcs-citizens
+    container_name: tcs-citizens
     image: petitroll/tcs-doc
     environment:
       - db_host=tcs-database
