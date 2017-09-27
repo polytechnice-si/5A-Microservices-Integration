@@ -79,6 +79,39 @@ a204d8f920cc        mongo:3.0            "docker-entrypoint..."   18 minutes ago
 10ec05e45eab        petitroll/cadvisor   "/usr/bin/cadvisor..."   18 minutes ago      Up 16 seconds             0.0.0.0:8090->8080/tcp     tcs-monitoring
 ```
 
+### Attaching to a running container
+
+To attach a terminal to a running container (and get a view on the logs for example), use the `attach` command. It gives you a non-interactive view of what's happening inside your container
+
+```
+azrael:deployment mosser$ docker attach tcs-citizens
+```
+
+If you wan to interact with your container, you have to start a shell instead of simply listening to the command that was triggered when the container started the image. 
+
+```
+azrael:deployment mosser$ docker exec -it tcs-citizens /bin/bash
+root@0c3e3aca6e26:/usr/local/tomee# ls -lh
+total 132K
+-rw-rw-r-- 1 root root   52K Mar  7  2017 LICENSE
+-rwx------ 1 root root  6.9K Jan  2  2017 NOTICE
+-rw-rw-r-- 1 root root  7.1K Jan 10  2017 RELEASE-NOTES
+-rw-rw-r-- 1 root root   17K Jan 10  2017 RUNNING.txt
+drwxr-sr-x 3 root staff 4.0K Sep 27 05:49 WEB-INF
+drwxrwxr-x 2 root root  4.0K Sep 14 07:13 bin
+drwxrwxr-x 4 root root  4.0K Sep 27 05:49 conf
+drwxrwxr-x 2 root root   12K Sep 14 07:13 lib
+drwxrwxr-x 2 root root  4.0K Sep 27 05:49 logs
+-rwxr--r-- 1 root root   385 Sep 26 15:57 start.sh
+drwxrwxr-x 2 root root  4.0K Sep 27 05:49 temp
+drwxrwxr-x 7 root root  4.0K Sep 27 05:49 webapps
+drwxrwxr-x 3 root root  4.0K Sep 27 05:49 work
+root@0c3e3aca6e26:/usr/local/tomee# exit
+exit
+azrael:deployment mosser$ 
+```
+
+
 ### Stopping / Starting a container
 
 A container can be stopped, using the `stop` command. When stopped, the container still exists on the local machine, and can be restarted using the `start` command. Restarting an existing container is obviously quicker than creating a new container.
