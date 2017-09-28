@@ -37,7 +37,7 @@ We consider here a simple case study, the _Tax Computation Service_. The key ide
     * [x] [Monitoring containers](https://github.com/polytechnice-si/5A-Microservices-Integration/tree/master/monitoring/README.md)
   * Service testing
     * [x] [Acceptance testing using scenarios](https://github.com/polytechnice-si/5A-Microservices-Integration/blob/master/tests/acceptation/README.md)
-    * [x] [Stress testing](https://github.com/polytechnice-si/5A-Microservices-Integration/blob/master/tests/stress/README.md)
+    * [x] [Stress testing](https://github.com/polytechnice-si/5A-Microservices-Integration/blob/master/tests/stress/readme.md)
 
 ### Phase #2: Integrating services
 
