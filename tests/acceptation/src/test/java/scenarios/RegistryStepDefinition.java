@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 public class RegistryStepDefinition {
 
 
-    private String host = "host";
+    private String host = "localhost";
     private int port = 8080;
 
     private JSONObject citizen;
