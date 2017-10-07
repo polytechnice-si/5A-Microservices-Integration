@@ -22,6 +22,11 @@
             <artifactId>camel-csv</artifactId>
             <version>${camel.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-jackson</artifactId>
+            <version>${camel.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

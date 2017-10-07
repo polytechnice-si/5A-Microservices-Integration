@@ -1,16 +1,17 @@
 package fr.unice.polytech.esb.flows.technical.data;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 
 public class Person implements Serializable {
 
-    private String ssid;
-    private String lastName;
-    private String firstName;
-    private String birthYear;
-    private String zipCode;
-    private String address;
-
+    @JsonProperty("ssn") private String ssid;
+    @JsonProperty("last_name") private String lastName;
+    @JsonProperty("first_name")private String firstName;
+    @JsonProperty("birth_year") private String birthYear;
+    @JsonProperty("zip_code") private String zipCode;
+    @JsonProperty private String address;
 
     public String getSsid() { return ssid; }
     public void setSsid(String ssid) { this.ssid = ssid;  }
