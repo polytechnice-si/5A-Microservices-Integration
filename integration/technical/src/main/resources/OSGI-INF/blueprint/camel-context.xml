@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint
+        xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:camelcxf="http://camel.apache.org/schema/blueprint/cxf"
+        xsi:schemaLocation="
+        http://www.osgi.org/xmlns/blueprint/v1.0.0
+        http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd" >
+
+
+    <!--
+        ******************************************************
+        * To declare the routes defined for the camel engine *
+        ******************************************************
+    -->
+
+    <camelContext xmlns="http://camel.apache.org/schema/blueprint">
+        <package>fr.unice.polytech.esb.flows.technical</package>
+    </camelContext>
+
+
+    <!--
+        *************************************************************
+        * Configuring ActiveMQ for trusted objects & Authentication *
+        *************************************************************
+    -->
+
+    <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
+        <property name="configuration" ref="jmsConfig"/>
+    </bean>
+
+    <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
+        <property name="connectionFactory" ref="cf"/>
+    </bean>
+
+    <bean id="cf" class="org.apache.activemq.spring.ActiveMQConnectionFactory">
+        <property name="brokerURL" value="tcp://localhost:61616"/>
+        <property name="trustAllPackages" value="true"/>
+        <property name="userName" value="karaf" />
+        <property name="password" value="karaf" />
+    </bean>
+
+</blueprint>
