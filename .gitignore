@@ -9,7 +9,6 @@
 **/*.war
 
 **/target
-.gitignore
 src/main/java/stubs/
 src/main/resources/
 src/test/

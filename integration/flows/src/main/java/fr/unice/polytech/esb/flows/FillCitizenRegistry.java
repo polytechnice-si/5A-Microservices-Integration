@@ -1,11 +1,11 @@
-package fr.unice.polytech.esb.flows.technical;
+package fr.unice.polytech.esb.flows;
 
-import fr.unice.polytech.esb.flows.technical.data.Person;
-import fr.unice.polytech.esb.flows.technical.data.Request;
+import fr.unice.polytech.esb.flows.data.*;
+import fr.unice.polytech.esb.flows.utils.*;
+import static fr.unice.polytech.esb.flows.utils.Endpoints.*;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.model.dataformat.CsvDataFormat;
 import org.apache.camel.model.dataformat.JsonLibrary;
 
 import java.util.Map;
@@ -14,21 +14,20 @@ import java.util.concurrent.Executors;
 
 public class FillCitizenRegistry extends RouteBuilder {
 
-    private static final String CSV_INPUT_DIRECTORY   = "file:/servicemix/camel/input";
-    private static final String REGISTER_A_CITIZEN    = "activemq:registerCitizen";
-    private static final String REGISTRATION_ENDPOINT = "http://tcs-citizens:8080/tcs-service-document/registry";
+
 
     private static final ExecutorService WORKERS = Executors.newFixedThreadPool(5);
 
     @Override
     public void configure() throws Exception {
 
-        from(CSV_INPUT_DIRECTORY)
+        from(CSV_INPUT_FILE_CITIZENS)
                 .routeId("csv-to-citizen-registration")
                 .routeDescription("Loads a CSV file containing citizens and routes contents to the Registry")
+
                     .log("Processing ${file:name}")
                     .log("  Loading the file as a CSV document")
-                .unmarshal(buildCsvFormat())  // Body is now a List of Map<String -> Object>
+                .unmarshal(CsvFormat.buildCsvFormat())  // Body is now a List of Map<String -> Object>
                     .log("  Splitting the content of the file into atomic lines")
                 .split(body())
                     .parallelProcessing().executorService(WORKERS)
@@ -41,9 +40,10 @@ public class FillCitizenRegistry extends RouteBuilder {
         from(REGISTER_A_CITIZEN)
                 .routeId("calling-registry")
                 .routeDescription("Send POST requests to the Citizen Registry, reading from an ActiveMQ")
+
                     .log("[${body.ssid}] Creating registration request")
                 .process((Exchange exc) -> {
-                    Request req = new Request("REGISTER",(Person) exc.getIn().getBody());
+                    RegistryRequest req = new RegistryRequest("REGISTER",(Person) exc.getIn().getBody());
                     exc.getIn().setBody(req);
                 })
                     .log("[${body.citizen.ssid}] Setting headers for the HTTP request")
@@ -55,14 +55,6 @@ public class FillCitizenRegistry extends RouteBuilder {
                 .to(REGISTRATION_ENDPOINT)
         ;
 
-    }
-
-    private static CsvDataFormat buildCsvFormat() {
-        CsvDataFormat format = new CsvDataFormat();
-        format.setDelimiter(",");
-        format.setSkipHeaderRecord(true);
-        format.setUseMaps(true);
-        return format;
     }
 
     private static Processor csv2person = (Exchange exchange) -> {

@@ -15,7 +15,7 @@
     -->
 
     <camelContext xmlns="http://camel.apache.org/schema/blueprint">
-        <package>fr.unice.polytech.esb.flows.technical</package>
+        <package>fr.unice.polytech.esb.flows</package>
     </camelContext>
 
 

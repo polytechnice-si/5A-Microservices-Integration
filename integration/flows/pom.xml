@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>technical</artifactId>
+    <artifactId>flows</artifactId>
     <version>1.0</version>
     <packaging>bundle</packaging>
     <name>ESB :: Integration :: Technical Flows</name>
@@ -17,16 +17,40 @@
     </parent>
 
     <dependencies>
+        <!-- Dependencies required by Camel -->
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-csv</artifactId>
             <version>${camel.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-jackson</artifactId>
             <version>${camel.version}</version>
+            <scope>provided</scope>
         </dependency>
+
+        <!-- Camel Testing with JMS and HTTP support -->
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-http</artifactId>
+            <version>${camel.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.25</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.9.1</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
 </project>

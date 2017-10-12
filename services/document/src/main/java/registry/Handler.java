@@ -11,15 +11,15 @@ import org.json.JSONObject;
 
 class Handler {
 
+    private static MongoCollection citizens = getCitizens();
+
     static JSONObject register(JSONObject input) {
-        MongoCollection citizens = getCitizens();
         Citizen data = new Citizen(input.getJSONObject("citizen"));
         citizens.insert(data);
         return new JSONObject().put("inserted", true).put("citizen",data.toJson());
     }
 
     static JSONObject delete(JSONObject input) {
-        MongoCollection citizens = getCitizens();
         String ssn = input.getString("ssn");
         Citizen theOne = citizens.findOne("{ssn:#}",ssn).as(Citizen.class);
         if (null == theOne) {
@@ -30,7 +30,6 @@ class Handler {
     }
 
     static JSONObject list(JSONObject input) {
-        MongoCollection citizens = getCitizens();
         String filter = input.getString("filter");
         MongoCursor<Citizen> cursor =
                 citizens.find("{lastName: {$regex: #}}", filter).as(Citizen.class);
@@ -46,7 +45,6 @@ class Handler {
     }
 
     static JSONObject purge(JSONObject input) {
-        MongoCollection citizens = getCitizens();
         if(input.getString("use_with").equals("caution")) {
             citizens.drop();
             return new JSONObject().put("purge", "done");
@@ -55,7 +53,6 @@ class Handler {
     }
 
     static JSONObject retrieve(JSONObject input) {
-        MongoCollection citizens = getCitizens();
         String ssn = input.getString("ssn");
         Citizen theOne = citizens.findOne("{ssn:#}",ssn).as(Citizen.class);
         if (theOne == null) {
@@ -68,4 +65,6 @@ class Handler {
         MongoClient client = new MongoClient(Network.HOST, Network.PORT);
         return new Jongo(client.getDB(Network.DATABASE)).getCollection(Network.COLLECTION);
     }
+
+
 }

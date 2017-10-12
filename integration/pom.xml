@@ -19,21 +19,52 @@
 
     <properties>
         <camel.version>2.16.5</camel.version> <!-- Bundled with ServiceMix 7.0.1 -->
+        <activemq.version>5.7.0</activemq.version>
+        <jsonassert.version>1.5.0</jsonassert.version>
         <bundle.symbolicName>${project.artifactId}</bundle.symbolicName>
         <bundle.namespace>fr.unice.polytech.esb.flows</bundle.namespace>
     </properties>
 
     <modules>
-        <module>technical</module>
-        <!-- <module>business</module> -->
+        <module>flows</module>
     </modules>
-
 
     <dependencies>
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-core</artifactId>
             <version>${camel.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-test</artifactId>
+            <version>${camel.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-jms</artifactId>
+            <version>${camel.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-camel</artifactId>
+            <version>${activemq.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-core</artifactId>
+            <version>${activemq.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.skyscreamer</groupId>
+            <artifactId>jsonassert</artifactId>
+            <version>${jsonassert.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
