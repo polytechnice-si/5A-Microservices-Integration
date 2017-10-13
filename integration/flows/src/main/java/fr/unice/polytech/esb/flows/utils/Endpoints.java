@@ -15,4 +15,7 @@ public class Endpoints {
     // External partners
     public static final String REGISTRATION_ENDPOINT = "http:tcs-registry:8080/tcs-service-document/registry";
 
+    // Dead letters channel
+    public static final String CITIZEN_REGISTRY_DEATH = "activemq:citizen-registry:dead";
+
 }

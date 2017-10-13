@@ -10,11 +10,16 @@ import org.junit.*;
 
 import java.util.concurrent.TimeUnit;
 
+import static fr.unice.polytech.esb.flows.HandleTaxForms.REDELIVERIES;
+
 public class HandleTaxFormsTest extends ActiveMQTest {
 
     @Override public String isMockEndpointsAndSkip() { return Endpoints.REGISTRATION_ENDPOINT;  }
     @Override public String isMockEndpoints() {
-        return Endpoints.GET_CITIZEN_INFO + "|" + Endpoints.HANDLE_A_TAX_FORM;
+        return Endpoints.GET_CITIZEN_INFO +
+                "|" + Endpoints.HANDLE_A_TAX_FORM +
+                "|" + Endpoints.CITIZEN_REGISTRY_DEATH
+        ;
     }
 
     @Override protected RouteBuilder createRouteBuilder() throws Exception { return new HandleTaxForms(); }
@@ -22,14 +27,17 @@ public class HandleTaxFormsTest extends ActiveMQTest {
     private static final String citizenRegistry = "mock://"+Endpoints.REGISTRATION_ENDPOINT;
     private static final String getCitizenInfo  = "mock://"+Endpoints.GET_CITIZEN_INFO;
     private static final String handleTaxForm  = "mock://"+Endpoints.HANDLE_A_TAX_FORM;
+    private static final String deadLetter = "mock://"+Endpoints.CITIZEN_REGISTRY_DEATH;
 
     @Test public void testExecutionContext() throws Exception {
         assertNotNull(context.hasEndpoint(Endpoints.GET_CITIZEN_INFO));
         assertNotNull(context.hasEndpoint(Endpoints.REGISTRATION_ENDPOINT));
         assertNotNull(context.hasEndpoint(Endpoints.HANDLE_A_TAX_FORM));
+        assertNotNull(context.hasEndpoint(Endpoints.CITIZEN_REGISTRY_DEATH));
         assertNotNull(context.hasEndpoint(citizenRegistry));
         assertNotNull(context.hasEndpoint(getCitizenInfo));
         assertNotNull(context.hasEndpoint(handleTaxForm));
+        assertNotNull(context.hasEndpoint(deadLetter));
     }
 
     private TaxForm form;
@@ -55,12 +63,15 @@ public class HandleTaxFormsTest extends ActiveMQTest {
     @Before public void initMocks() {
         resetMocks();
         getMockEndpoint(citizenRegistry).whenAnyExchangeReceived((Exchange exc) -> {
+            String ssn = exc.getProperty("citizen-id", String.class);
+            if (ssn.length() < 2)
+                throw new IllegalArgumentException("Bad citizen-id");
             String template = "{\n" +
                     "    \"address\": \"nowhere, middle of\",\n" +
                     "    \"last_name\": \"Doe\",\n" +
                     "    \"first_name\": \"John\",\n" +
                     "    \"zip_code\": \"06543\",\n" +
-                    "    \"ssn\": \""+ exc.getProperty("citizen-id", String.class) +"\",\n" +
+                    "    \"ssn\": \""+ ssn +"\",\n" +
                     "    \"birth_year\": 1970\n" +
                     "}";
             exc.getIn().setBody(template);
@@ -71,6 +82,7 @@ public class HandleTaxFormsTest extends ActiveMQTest {
         getMockEndpoint(handleTaxForm).expectedMessageCount(1);
         getMockEndpoint(citizenRegistry).expectedMessageCount(1);
         getMockEndpoint(getCitizenInfo).expectedMessageCount(1);
+        getMockEndpoint(deadLetter).expectedMessageCount(0);
 
         TaxInfo info = new TaxInfo(john, form);
         Object out = template.requestBody(Endpoints.HANDLE_A_TAX_FORM, form);
@@ -79,9 +91,22 @@ public class HandleTaxFormsTest extends ActiveMQTest {
         assertEquals(info, out);
     }
 
+    @Test public void testHandleABadTaxForm() throws Exception {
+        getMockEndpoint(handleTaxForm).expectedMessageCount(1);
+        getMockEndpoint(getCitizenInfo).expectedMessageCount(1);
+        getMockEndpoint(citizenRegistry).expectedMessageCount(1 + REDELIVERIES);
+        getMockEndpoint(deadLetter).expectedMessageCount(1);
+
+        form.setSsn("1");
+        TaxInfo out = (TaxInfo) template.requestBody(Endpoints.HANDLE_A_TAX_FORM, form);
+
+        assertMockEndpointsSatisfied(1, TimeUnit.SECONDS);
+        assertNull( out.getPerson());
+    }
+
 
     @Test public void testRetrieveCitizenInfo() throws Exception {
-        // Assertions on the mocks w.r.t. number of exhcnaged messages
+        // Assertions on the mocks w.r.t. number of exchnaged messages
         getMockEndpoint(citizenRegistry).expectedMessageCount(1);
         getMockEndpoint(getCitizenInfo).expectedMessageCount(1);
 

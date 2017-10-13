@@ -15,10 +15,17 @@ import static fr.unice.polytech.esb.flows.utils.Endpoints.*;
 
 public class HandleTaxForms extends RouteBuilder {
 
-
+    public static int REDELIVERIES = 2;
     private static final ExecutorService WORKERS = Executors.newFixedThreadPool(10);
 
     @Override public void configure() throws Exception {
+
+        errorHandler(
+                deadLetterChannel(CITIZEN_REGISTRY_DEATH)
+                        .useOriginalMessage()
+                        .maximumRedeliveries(REDELIVERIES)
+                        .redeliveryDelay(500)
+        );
 
         from(GET_CITIZEN_INFO)
                 .routeId("retrieve-citizen-information")
