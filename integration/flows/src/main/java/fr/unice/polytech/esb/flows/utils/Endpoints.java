@@ -11,11 +11,12 @@ public class Endpoints {
     public static final String HANDLE_A_TAX_FORM   = "activemq:handleTaxForm";
     public static final String GET_CITIZEN_INFO    = "activemq:getCitizenInfo";
     public static final String REGISTER_A_CITIZEN  = "activemq:registerCitizen";
+    public static final String HANDLE_A_CITIZEN    = "activemq:handleACitizen";
 
     // External partners
     public static final String REGISTRATION_ENDPOINT = "http:tcs-registry:8080/tcs-service-document/registry";
 
     // Dead letters channel
-    public static final String CITIZEN_REGISTRY_DEATH = "activemq:citizen-registry:dead";
+    public static final String DEATH_POOL = "activemq:global:dead";
 
 }

@@ -15,36 +15,31 @@ import static fr.unice.polytech.esb.flows.utils.Endpoints.*;
 
 public class HandleTaxForms extends RouteBuilder {
 
-    public static int REDELIVERIES = 2;
     private static final ExecutorService WORKERS = Executors.newFixedThreadPool(10);
 
     @Override public void configure() throws Exception {
 
-        errorHandler(
-                deadLetterChannel(CITIZEN_REGISTRY_DEATH)
-                        .useOriginalMessage()
-                        .maximumRedeliveries(REDELIVERIES)
-                        .redeliveryDelay(500)
-        );
+        /***********************************************
+         ** Error Handling using Dead Letters Channel **
+         ***********************************************/
 
-        from(GET_CITIZEN_INFO)
-                .routeId("retrieve-citizen-information")
-                .routeDescription("Retrieve a given citizen based on his/her SSN")
 
-                .setProperty("citizen-id", simple("${body}"))
-                    .log("Creating retrieval request for citizen #${exchangeProperty[citizen-id]}")
-                .setHeader(Exchange.HTTP_METHOD, constant("POST"))
-                .setHeader("Content-Type", constant("application/json"))
-                .setHeader("Accept", constant("application/json"))
-                .process((Exchange exchange) -> {
-                    String request = "{\n" +
-                            "  \"event\": \"RETRIEVE\",\n" +
-                            "  \"ssn\": \""+ exchange.getProperty("citizen-id", String.class) +"\"\n" +
-                            "}";
-                    exchange.getIn().setBody(request);
-                })
-                .inOut(REGISTRATION_ENDPOINT)
-                .unmarshal().json(JsonLibrary.Jackson, Person.class)
+
+        /*****************************************
+         ** Business Logic: CSV file -> Letters **
+         *****************************************/
+
+        from(CSV_INPUT_FILE_TAXES)
+                .routeId("csv-to-tax-form-processing")
+                .routeDescription("Loads a CSV file containing tax forms and process contents")
+
+                .log("Processing ${file:name}")
+                .unmarshal(CsvFormat.buildCsvFormat())  // Body is now a List of Map<String -> Object>
+                .log("  Splitting the content of the file into atomic lines")
+                .split(body())
+                .parallelProcessing().executorService(WORKERS)
+                .process(csv2taxForm)
+                .to(HANDLE_A_TAX_FORM)
         ;
 
         from(HANDLE_A_TAX_FORM)
@@ -60,20 +55,10 @@ public class HandleTaxForms extends RouteBuilder {
                     exchange.getIn().setBody(new TaxInfo(p,f));
                 })
                 .removeProperty("tax-form")
+                //.to(HANDLE_A_CITIZEN)
         ;
 
-        from(CSV_INPUT_FILE_TAXES)
-                .routeId("csv-to-tax-form-processing")
-                .routeDescription("Loads a CSV file containing tax forms and process contents")
 
-                .log("Processing ${file:name}")
-                .unmarshal(CsvFormat.buildCsvFormat())  // Body is now a List of Map<String -> Object>
-                .log("  Splitting the content of the file into atomic lines")
-                .split(body())
-                    .parallelProcessing().executorService(WORKERS)
-                    .process(csv2taxForm)
-                    .to(HANDLE_A_TAX_FORM)
-        ;
     }
 
     private static Processor csv2taxForm = (Exchange exchange) -> {
