@@ -11,14 +11,13 @@ import org.junit.*;
 import java.util.concurrent.TimeUnit;
 
 import static fr.unice.polytech.esb.flows.DeathPool.REDELIVERIES;
-import static fr.unice.polytech.esb.flows.utils.Endpoints.DEATH_POOL;
 
 public class HandleTaxFormsTest extends ActiveMQTest {
 
     @Override public String isMockEndpointsAndSkip() { return Endpoints.REGISTRATION_ENDPOINT;  }
     @Override public String isMockEndpoints() {
         return Endpoints.GET_CITIZEN_INFO +
-                "|" + Endpoints.HANDLE_A_TAX_FORM +
+                "|" + Endpoints.BUILD_TAX_INFO +
                 "|" + Endpoints.DEATH_POOL
         ;
     }
@@ -27,9 +26,9 @@ public class HandleTaxFormsTest extends ActiveMQTest {
         HandleTaxForms routes = new HandleTaxForms();
         CallExternalPartners partners = new CallExternalPartners();
         DeathPool deathPool = new DeathPool();
+
         return new RouteBuilder() {
-            @Override
-            public void configure() throws Exception {
+            @Override public void configure() throws Exception {
                 this.includeRoutes(deathPool);
                 this.setErrorHandlerBuilder(deathPool.getErrorHandlerBuilder());
                 this.includeRoutes(partners);
@@ -40,13 +39,13 @@ public class HandleTaxFormsTest extends ActiveMQTest {
 
     private static final String citizenRegistry = "mock://"+Endpoints.REGISTRATION_ENDPOINT;
     private static final String getCitizenInfo  = "mock://"+Endpoints.GET_CITIZEN_INFO;
-    private static final String handleTaxForm  = "mock://"+Endpoints.HANDLE_A_TAX_FORM;
+    private static final String handleTaxForm  = "mock://"+Endpoints.BUILD_TAX_INFO;
     private static final String deadLetter = "mock://"+Endpoints.DEATH_POOL;
 
     @Test public void testExecutionContext() throws Exception {
         assertNotNull(context.hasEndpoint(Endpoints.GET_CITIZEN_INFO));
         assertNotNull(context.hasEndpoint(Endpoints.REGISTRATION_ENDPOINT));
-        assertNotNull(context.hasEndpoint(Endpoints.HANDLE_A_TAX_FORM));
+        assertNotNull(context.hasEndpoint(Endpoints.BUILD_TAX_INFO));
         assertNotNull(context.hasEndpoint(Endpoints.DEATH_POOL));
         assertNotNull(context.hasEndpoint(citizenRegistry));
         assertNotNull(context.hasEndpoint(getCitizenInfo));
@@ -99,7 +98,7 @@ public class HandleTaxFormsTest extends ActiveMQTest {
         getMockEndpoint(deadLetter).expectedMessageCount(0);
 
         TaxInfo info = new TaxInfo(john, form);
-        Object out = template.requestBody(Endpoints.HANDLE_A_TAX_FORM, form);
+        Object out = template.requestBody(Endpoints.BUILD_TAX_INFO, form);
 
         assertMockEndpointsSatisfied(1, TimeUnit.SECONDS);
         assertEquals(info, out);
@@ -108,16 +107,15 @@ public class HandleTaxFormsTest extends ActiveMQTest {
     @Test public void testHandleABadTaxForm() throws Exception {
         getMockEndpoint(handleTaxForm).expectedMessageCount(1);
         getMockEndpoint(getCitizenInfo).expectedMessageCount(1);
-        //getMockEndpoint(citizenRegistry).expectedMessageCount(1 + REDELIVERIES);
-       // getMockEndpoint(deadLetter).expectedMessageCount(1);
+        getMockEndpoint(citizenRegistry).expectedMessageCount(1 + REDELIVERIES);
+        getMockEndpoint(deadLetter).expectedMessageCount(1);
 
         form.setSsn("1");
-        TaxInfo out = (TaxInfo) template.requestBody(Endpoints.HANDLE_A_TAX_FORM, form);
+        TaxInfo out = (TaxInfo) template.requestBody(Endpoints.BUILD_TAX_INFO, form);
 
         assertMockEndpointsSatisfied(1, TimeUnit.SECONDS);
         assertNull( out.getPerson());
     }
-
 
     @Test public void testRetrieveCitizenInfo() throws Exception {
         // Assertions on the mocks w.r.t. number of exchnaged messages
