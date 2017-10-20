@@ -28,15 +28,14 @@ public class CallExternalPartners extends RouteBuilder {
                 .routeId("retrieve-citizen-information")
                 .routeDescription("Retrieve a given citizen based on his/her SSN")
 
-                .setProperty("citizen-id", simple("${body}"))
-                .log("Creating retrieval request for citizen #${exchangeProperty[citizen-id]}")
+                .log("Creating retrieval request for citizen #${body}")
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader("Content-Type", constant("application/json"))
                 .setHeader("Accept", constant("application/json"))
                 .process((Exchange exchange) -> {
                     String request = "{\n" +
                             "  \"event\": \"RETRIEVE\",\n" +
-                            "  \"ssn\": \""+ exchange.getProperty("citizen-id", String.class) +"\"\n" +
+                            "  \"ssn\": \""+ exchange.getIn().getBody(String.class) +"\"\n" +
                             "}";
                     exchange.getIn().setBody(request);
                 })
@@ -56,7 +55,7 @@ public class CallExternalPartners extends RouteBuilder {
                 .setHeader("Content-Type", constant("application/json"))
                 .setHeader("Accept", constant("application/json"))
                 // Using a dynamic endpoint => refer to a recipient list, inOut as an endpoint parameter
-                .recipientList(simple("${exchangeProperty[citizen-id-gen]}?exchangePattern=InOut"))
+                .recipientList(simple("${header[citizen-id-gen]}?exchangePattern=InOut"))
                 .unmarshal().json(JsonLibrary.Jackson, String.class)
         ;
 

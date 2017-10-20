@@ -11,6 +11,7 @@ public class DeathPool extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
+
         errorHandler(
                 deadLetterChannel(DEATH_POOL)
                         .useOriginalMessage()
@@ -19,7 +20,8 @@ public class DeathPool extends RouteBuilder {
         );
 
         from(BAD_CITIZEN)
-                .log("    Bad information for citizen ")
+                .log("Bad information for citizen ")
+                .log("${body}")
         ;
     }
 

@@ -48,4 +48,15 @@ public class TaxForm implements Serializable {
         result = 31 * result + (phone != null ? phone.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "TaxForm{" +
+                "ssn='" + ssn + '\'' +
+                ", email='" + email + '\'' +
+                ", income=" + income +
+                ", assets=" + assets +
+                ", phone='" + phone + '\'' +
+                '}';
+    }
 }

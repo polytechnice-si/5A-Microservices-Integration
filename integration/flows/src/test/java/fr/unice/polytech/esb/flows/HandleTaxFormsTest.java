@@ -12,45 +12,51 @@ import java.util.concurrent.TimeUnit;
 
 import static fr.unice.polytech.esb.flows.DeathPool.REDELIVERIES;
 
+
 public class HandleTaxFormsTest extends ActiveMQTest {
 
-    @Override public String isMockEndpointsAndSkip() { return Endpoints.REGISTRATION_ENDPOINT;  }
-    @Override public String isMockEndpoints() {
-        return Endpoints.GET_CITIZEN_INFO +
-                "|" + Endpoints.BUILD_TAX_INFO +
-                "|" + Endpoints.DEATH_POOL
+    @Override public String isMockEndpointsAndSkip() {
+        return Endpoints.GET_CITIZEN_INFO          +
+                "|" + Endpoints.GET_ANONYMOUS_ID   +
+                "|" + Endpoints.TAX_COMPUTE_SIMPLE +
+                "|" + Endpoints.TAX_COMPUTE_COMPLEX
         ;
     }
 
-    @Override protected RouteBuilder createRouteBuilder() throws Exception {
-        HandleTaxForms routes = new HandleTaxForms();
-        CallExternalPartners partners = new CallExternalPartners();
-        DeathPool deathPool = new DeathPool();
-
-        return new RouteBuilder() {
-            @Override public void configure() throws Exception {
-                this.includeRoutes(deathPool);
-                this.setErrorHandlerBuilder(deathPool.getErrorHandlerBuilder());
-                this.includeRoutes(partners);
-                this.includeRoutes(routes);
-            }
-        };
+    @Override public String isMockEndpoints() {
+        return Endpoints.BAD_CITIZEN          +
+                "|" + Endpoints.DEATH_POOL    +
+                "|" + Endpoints.COMPUTE_TAXES +
+                "|" + Endpoints.BUILD_TAX_INFO
+        ;
     }
 
-    private static final String citizenRegistry = "mock://"+Endpoints.REGISTRATION_ENDPOINT;
-    private static final String getCitizenInfo  = "mock://"+Endpoints.GET_CITIZEN_INFO;
-    private static final String handleTaxForm  = "mock://"+Endpoints.BUILD_TAX_INFO;
-    private static final String deadLetter = "mock://"+Endpoints.DEATH_POOL;
-
     @Test public void testExecutionContext() throws Exception {
-        assertNotNull(context.hasEndpoint(Endpoints.GET_CITIZEN_INFO));
-        assertNotNull(context.hasEndpoint(Endpoints.REGISTRATION_ENDPOINT));
-        assertNotNull(context.hasEndpoint(Endpoints.BUILD_TAX_INFO));
-        assertNotNull(context.hasEndpoint(Endpoints.DEATH_POOL));
-        assertNotNull(context.hasEndpoint(citizenRegistry));
-        assertNotNull(context.hasEndpoint(getCitizenInfo));
-        assertNotNull(context.hasEndpoint(handleTaxForm));
-        assertNotNull(context.hasEndpoint(deadLetter));
+        isAvailableAndMocked(Endpoints.GET_CITIZEN_INFO);
+        isAvailableAndMocked(Endpoints.GET_ANONYMOUS_ID);
+        isAvailableAndMocked(Endpoints.TAX_COMPUTE_COMPLEX);
+        isAvailableAndMocked(Endpoints.TAX_COMPUTE_SIMPLE);
+        isAvailableAndMocked(Endpoints.BAD_CITIZEN);
+        isAvailableAndMocked(Endpoints.DEATH_POOL);
+        isAvailableAndMocked(Endpoints.COMPUTE_TAXES);
+        isAvailableAndMocked(Endpoints.BUILD_TAX_INFO);
+    }
+
+    @Before public void initMocks() {
+        mock(Endpoints.GET_CITIZEN_INFO).whenAnyExchangeReceived((Exchange exc) -> {
+            String ssn = exc.getIn().getBody(String.class);
+            if (ssn.length() < 2) {
+                throw new IllegalArgumentException("Bad citizen-id");
+            }
+            Person p = new Person();
+            p.setAddress("nowhere, middle of");
+            p.setLastName("Doe");
+            p.setFirstName("John");
+            p.setZipCode("06543");
+            p.setSsid(ssn);
+            p.setBirthYear("1970");
+            exc.getIn().setBody(p);
+        });
     }
 
     private TaxForm form;
@@ -72,62 +78,29 @@ public class HandleTaxFormsTest extends ActiveMQTest {
         john.setSsid("1234567890");
     }
 
-
-    @Before public void initMocks() {
-        resetMocks();
-        getMockEndpoint(citizenRegistry).whenAnyExchangeReceived((Exchange exc) -> {
-            String ssn = exc.getProperty("citizen-id", String.class);
-            if (ssn.length() < 2)
-                throw new IllegalArgumentException("Bad citizen-id");
-            String template = "{\n" +
-                    "    \"address\": \"nowhere, middle of\",\n" +
-                    "    \"last_name\": \"Doe\",\n" +
-                    "    \"first_name\": \"John\",\n" +
-                    "    \"zip_code\": \"06543\",\n" +
-                    "    \"ssn\": \""+ ssn +"\",\n" +
-                    "    \"birth_year\": 1970\n" +
-                    "}";
-            exc.getIn().setBody(template);
-        });
-    }
-
     @Test public void testHandleATaxForm() throws Exception {
-        getMockEndpoint(handleTaxForm).expectedMessageCount(1);
-        getMockEndpoint(citizenRegistry).expectedMessageCount(1);
-        getMockEndpoint(getCitizenInfo).expectedMessageCount(1);
-        getMockEndpoint(deadLetter).expectedMessageCount(0);
+        mock(Endpoints.GET_CITIZEN_INFO).expectedMessageCount(1);
+        mock(Endpoints.DEATH_POOL).expectedMessageCount(0);
 
         TaxInfo info = new TaxInfo(john, form);
-        Object out = template.requestBody(Endpoints.BUILD_TAX_INFO, form);
+        TaxInfo out = (TaxInfo) template.requestBody(Endpoints.BUILD_TAX_INFO, form);
 
         assertMockEndpointsSatisfied(1, TimeUnit.SECONDS);
         assertEquals(info, out);
     }
 
     @Test public void testHandleABadTaxForm() throws Exception {
-        getMockEndpoint(handleTaxForm).expectedMessageCount(1);
-        getMockEndpoint(getCitizenInfo).expectedMessageCount(1);
-        getMockEndpoint(citizenRegistry).expectedMessageCount(1 + REDELIVERIES);
-        getMockEndpoint(deadLetter).expectedMessageCount(1);
+        mock(Endpoints.GET_CITIZEN_INFO).expectedMessageCount(1 + REDELIVERIES);
+        mock(Endpoints.DEATH_POOL).expectedMessageCount(1 );
 
         form.setSsn("1");
-        TaxInfo out = (TaxInfo) template.requestBody(Endpoints.BUILD_TAX_INFO, form);
+        template.requestBody(Endpoints.BUILD_TAX_INFO, form);
 
         assertMockEndpointsSatisfied(1, TimeUnit.SECONDS);
-        assertNull( out.getPerson());
     }
 
-    @Test public void testRetrieveCitizenInfo() throws Exception {
-        // Assertions on the mocks w.r.t. number of exchnaged messages
-        getMockEndpoint(citizenRegistry).expectedMessageCount(1);
-        getMockEndpoint(getCitizenInfo).expectedMessageCount(1);
+    @Test public void testComputeTaxeSimple() throws Exception {
 
-        // Calling the integration flow
-        Object out = template.requestBody(Endpoints.GET_CITIZEN_INFO, john.getSsid());
-
-        // ensuring assertions
-        assertMockEndpointsSatisfied(1, TimeUnit.SECONDS);
-        assertEquals(john, out);
     }
 
 }

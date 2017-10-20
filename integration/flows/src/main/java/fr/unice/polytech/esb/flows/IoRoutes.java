@@ -57,10 +57,16 @@ public class IoRoutes extends RouteBuilder {
         ;
 
         from(SNAIL_MAIL_PRINT)
+                .routeId("letter-printing")
+                .routeDescription("Print a physical letter, to be sent by snail mail")
+
                 .to(LETTER_OUTPUT_DIR + "?fileName=${exchangeProperty[tax-info].person.ssn}.txt")
         ;
 
         from(EMAIL_SENDING)
+                .routeId("email-sending")
+                .routeDescription("Send an email")
+
                 .log("Sending email for ${exchangeProperty[tax-info].form.email}")
         ;
 

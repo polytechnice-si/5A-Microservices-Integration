@@ -56,4 +56,16 @@ public class Person implements Serializable {
         result = 31 * result + (address != null ? address.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "ssid='" + ssid + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", birthYear='" + birthYear + '\'' +
+                ", zipCode='" + zipCode + '\'' +
+                ", address='" + address + '\'' +
+                '}';
+    }
 }

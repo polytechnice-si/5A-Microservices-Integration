@@ -56,4 +56,14 @@ public class TaxInfo implements Serializable {
         result = 31 * result + (timeStamp != null ? timeStamp.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "TaxInfo{" +
+                "person=" + person +
+                ", form=" + form +
+                ", taxAmount=" + taxAmount +
+                ", timeStamp='" + timeStamp + '\'' +
+                '}';
+    }
 }
