@@ -10,7 +10,7 @@ public class Endpoints {
     public static final String LETTER_OUTPUT_DIR = "file:/servicemix/camel/output";
 
     // Internal message queues
-    public static final String BUILD_TAX_INFO = "activemq:handle-tax-form";
+    public static final String BUILD_TAX_INFO       = "activemq:handle-tax-form";
     public static final String GET_CITIZEN_INFO     = "activemq:get-citizen-info";
     public static final String REGISTER_A_CITIZEN   = "activemq:register-citizen";
     public static final String GET_ANONYMOUS_ID     = "activemq:anonymous-id-gen";

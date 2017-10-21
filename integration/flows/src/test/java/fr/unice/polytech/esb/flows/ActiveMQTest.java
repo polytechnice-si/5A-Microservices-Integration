@@ -8,6 +8,8 @@ import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
@@ -15,19 +17,26 @@ import java.util.Map;
 
 public abstract class ActiveMQTest  extends CamelTestSupport {
 
+
+    protected static XPath xpath;
+
+    @BeforeClass public static void setUpXPath() throws Exception {
+        xpath = XPathFactory.newInstance().newXPath();
+    }
+
     /**
      * Handling ActiveMQ
      */
 
     private static BrokerService brokerSvc;
-    @BeforeClass public static void setUpClass() throws Exception {
+    @BeforeClass public static void setUpActiveMQ() throws Exception {
         brokerSvc = new BrokerService();
         brokerSvc.setBrokerName("TestBroker");
         brokerSvc.addConnector("tcp://localhost:61616");
         brokerSvc.start();
     }
 
-    @AfterClass public static void tearDownClass() throws Exception { brokerSvc.stop(); }
+    @AfterClass public static void tearDownActiveMQ() throws Exception { brokerSvc.stop(); }
 
 
     @Override protected RouteBuilder createRouteBuilder() throws Exception {

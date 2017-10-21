@@ -43,9 +43,45 @@ public class CallExternalPartners extends RouteBuilder {
                 .unmarshal().json(JsonLibrary.Jackson, Person.class)
         ;
 
+        /****************************************************************
+         ** Tax Computation (a RPC service implemented using SOAP/XML) **
+         ****************************************************************/
+
+        from(TAX_COMPUTE_SIMPLE)
+                .routeId("simple-tax-computation-call")
+                .routeDescription("Call the tax computation service using the simple method")
+
+                .bean(TaxComputationHelper.class, "buildSimpleRequest(${body}, ${header[req-uuid]})")
+                .inOut(TAX_COMPUTATION)
+
+        ;
+
+        from(TAX_COMPUTE_COMPLEX)
+                .routeId("complex-tax-computation-call")
+                .routeDescription("Call the tax computation service using the complex method")
+
+                .bean(TaxComputationHelper.class, "buildAdvancedRequest(${body}, ${header[req-uuid]})")
+                .inOut(TAX_COMPUTATION)
+        ;
+
         /*************************************************************************
          ** Data Anonymization (a resource service implemented using REST/JSON) **
          *************************************************************************/
+
+        from(CREATE_ANONYMOUS_GEN)
+                .routeId("create-anonymous-generator")
+                .routeDescription("Create an anonymous generator")
+
+                .setHeader(Exchange.HTTP_METHOD, constant("POST"))
+                .setHeader("Content-Type", constant("text/plain"))
+                .setHeader("Accept", constant("application/json"))
+
+                .setProperty("gen-name", simple("gen-${exchangeId}"))
+                .setBody(simple("${exchangeProperty[gen-name]}"))
+                .to(GENERATOR_ENDPOINT)
+                .setBody(simple(GENERATOR_ENDPOINT + "/${exchangeProperty[gen-name]}"))
+                .removeProperty("gen-name")
+        ;
 
         from(GET_ANONYMOUS_ID)
                 .routeId("compute-anonymous-id")
@@ -59,52 +95,8 @@ public class CallExternalPartners extends RouteBuilder {
                 .unmarshal().json(JsonLibrary.Jackson, String.class)
         ;
 
-        from(CREATE_ANONYMOUS_GEN)
-                .routeId("create-anonymous-generator")
-                .routeDescription("Create an anonymous generator")
 
-                .setHeader(Exchange.HTTP_METHOD, constant("POST"))
-                .setHeader("Content-Type", constant("text/plain"))
-                .setHeader("Accept", constant("application/json"))
-
-                .setProperty("gen-name", simple("gen-${exchangeId}"))
-                .setBody(simple("${exchangeProperty[gen-name]}"))
-                    .to(GENERATOR_ENDPOINT)
-                .setBody(simple(GENERATOR_ENDPOINT + "/${exchangeProperty[gen-name]}"))
-                .removeProperty("gen-name")
-        ;
-
-        /****************************************************************
-         ** Tax Computation (a RPC service implemented using SOAP/XML) **
-         ****************************************************************/
-
-        from(TAX_COMPUTE_SIMPLE)
-                .routeId("simple-tax-computation-call")
-                .routeDescription("Call the tax computation service using the simple method")
-
-                .bean(TaxComputationHelper.class, "buildSimpleRequest(${body}, ${exchangeProperty[req-uuid]})")
-                .inOut(TAX_COMPUTATION)
-                .process(result2taxInfo)
-        ;
-
-        from(TAX_COMPUTE_COMPLEX)
-                .routeId("complex-tax-computation-call")
-                .routeDescription("Call the tax computation service using the complex method")
-
-                .bean(TaxComputationHelper.class, "buildAdvancedRequest(${body}, ${exchangeProperty[req-uuid]})")
-                .inOut(TAX_COMPUTATION)
-                .process(result2taxInfo)
-        ;
 
     }
-
-    private static Processor result2taxInfo = (Exchange exc) -> {
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        Source response = (Source) exc.getIn().getBody();
-        TaxInfo result = new TaxInfo(exc.getProperty("partial-tax-info",TaxInfo.class));
-        result.setTaxAmount(Float.parseFloat(xpath.evaluate("//amount/text()", response)));
-        result.setTimeStamp(xpath.evaluate("//date/text()", response));
-        exc.getIn().setBody(result);
-    };
 
 }

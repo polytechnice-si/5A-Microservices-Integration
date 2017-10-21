@@ -1,9 +1,11 @@
 package fr.unice.polytech.esb.flows.utils;
 
 import fr.unice.polytech.esb.flows.data.TaxInfo;
+import org.xml.sax.InputSource;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
+import java.io.StringReader;
 
 public class TaxComputationHelper {
 
@@ -32,5 +34,19 @@ public class TaxComputationHelper {
         builder.append("</cook:complex>");
         return builder.toString();
     }
+
+    public TaxInfo consolidateResponse(String response, TaxInfo partial) throws Exception {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        TaxInfo result = new TaxInfo(partial);
+
+        InputSource src =  new InputSource(new StringReader(response));
+        result.setTaxAmount(Float.parseFloat(xpath.evaluate("//amount/text()", src)));
+
+        src =  new InputSource(new StringReader(response));
+        result.setTimeStamp(xpath.evaluate("//date/text()", src));
+
+        return result;
+    }
+
 
 }
