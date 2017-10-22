@@ -16,7 +16,7 @@ We also configure the maven build phase to trigger the Scala compiler, and the G
 
 ## Writing a Stress test
 
-A stress test is a plan Scala program, modelling how the service must be stressed. We start by defining an `httpConf` variable that configures the target. Here, we are targeting the `Registry` service, sending and receiving `son` data.
+A stress test is a plan Scala program, modelling how the service must be stressed. We start by defining an `httpConf` variable that configures the target. Here, we are targeting the `Registry` service, sending and receiving `json` data.
 
 
 ```scala
