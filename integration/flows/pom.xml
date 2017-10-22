@@ -30,6 +30,18 @@
             <version>${camel.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-servlet</artifactId>
+            <version>${camel.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-spring-ws</artifactId>
+            <version>${camel.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- Camel Testing with JMS and HTTP support -->
         <dependency>

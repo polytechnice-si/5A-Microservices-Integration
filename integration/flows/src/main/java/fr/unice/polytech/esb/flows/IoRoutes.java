@@ -1,6 +1,7 @@
 package fr.unice.polytech.esb.flows;
 
 import fr.unice.polytech.esb.flows.data.TaxForm;
+import fr.unice.polytech.esb.flows.data.TaxInfo;
 import fr.unice.polytech.esb.flows.utils.CsvFormat;
 import fr.unice.polytech.esb.flows.utils.TaxMessageGenerator;
 import org.apache.camel.Exchange;
@@ -28,8 +29,8 @@ public class IoRoutes extends RouteBuilder {
                 .log("Creating an anonymizer instance")
                 .setProperty("file", simple("${body}"))
                 .inOut(CREATE_ANONYMOUS_GEN)
-                .setProperty("citizen-id-gen", simple("${body}"))
-                .setBody(simple("${exchangedProperty[file]})"))
+                .setHeader("citizen-id-gen", simple("${body}"))
+                .setBody(simple("${exchangeProperty[file]})"))
                 .removeProperty("file")
 
                 .log("Processing ${file:name}")
@@ -38,8 +39,7 @@ public class IoRoutes extends RouteBuilder {
                 .split(body())
                     .parallelProcessing().executorService(WORKERS)
                     .process(csv2taxForm)
-                    .inOut(BUILD_TAX_INFO)
-                    .inOut(COMPUTE_TAXES)
+                    .inOut(TAX_FORM_TO_COMPUTE)
                     .to(MESSAGE_GENERATION)
         ;
 
@@ -49,25 +49,32 @@ public class IoRoutes extends RouteBuilder {
 
                 .setProperty("tax-info", simple("${body}"))
                 .bean(TaxMessageGenerator.class,
-                        "write(${body}, ${exchangeProperty[tax-comp-method]})")
+                        "write(${body},${header[tax-comp-method]})")
 
                 .multicast()
-                .parallelProcessing().executorService(WORKERS)
-                .to(SNAIL_MAIL_PRINT, EMAIL_SENDING)
+                    .parallelProcessing().executorService(WORKERS)
+                    .to(SNAIL_MAIL_PRINT, EMAIL_SENDING)
         ;
 
         from(SNAIL_MAIL_PRINT)
                 .routeId("letter-printing")
                 .routeDescription("Print a physical letter, to be sent by snail mail")
-
-                .to(LETTER_OUTPUT_DIR + "?fileName=${exchangeProperty[tax-info].person.ssn}.txt")
+                .process((Exchange e) -> {
+                    TaxInfo info = e.getProperty("tax-info", TaxInfo.class);
+                    e.setProperty("fileName", "letter-"+info.getPerson().getSsid()+".msg.txt");
+                })
+                .to(LETTER_OUTPUT_DIR + "?fileName=${exchangeProperty[fileName]}")
         ;
 
         from(EMAIL_SENDING)
                 .routeId("email-sending")
                 .routeDescription("Send an email")
 
-                .log("Sending email for ${exchangeProperty[tax-info].form.email}")
+                .process((Exchange e) -> {
+                    TaxInfo info = e.getProperty("tax-info", TaxInfo.class);
+                    e.setProperty("email", info.getForm().getEmail());
+                })
+                .log("Sending email for ${exchangeProperty[email]}")
         ;
 
     }
@@ -79,7 +86,7 @@ public class IoRoutes extends RouteBuilder {
         form.setEmail((String) data.get("Epost"));
         form.setPhone((String) data.get("Telefon"));
         form.setIncome(getMoneyValue(data, "Inntekt"));
-        form.setIncome(getMoneyValue(data, "Formue"));
+        form.setAssets(getMoneyValue(data, "Formue"));
         exchange.getIn().setBody(form);
     };
 

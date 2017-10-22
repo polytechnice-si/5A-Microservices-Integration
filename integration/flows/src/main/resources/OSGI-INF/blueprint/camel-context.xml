@@ -7,7 +7,6 @@
         http://www.osgi.org/xmlns/blueprint/v1.0.0
         http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd" >
 
-
     <!--
         ******************************************************
         * To declare the routes defined for the camel engine *
@@ -17,7 +16,6 @@
     <camelContext xmlns="http://camel.apache.org/schema/blueprint">
         <package>fr.unice.polytech.esb.flows</package>
     </camelContext>
-
 
     <!--
         *************************************************************
@@ -39,5 +37,22 @@
         <property name="userName" value="karaf" />
         <property name="password" value="karaf" />
     </bean>
+
+    <!--
+        ******************************************************************
+        * To setup camel servlet with OSGi HttpService for REST services *
+        ******************************************************************
+    -->
+    <reference id="httpService" interface="org.osgi.service.http.HttpService"/>
+
+    <bean class="org.apache.camel.component.servlet.osgi.OsgiServletRegisterer"
+          init-method="register"
+          destroy-method="unregister">
+        <property name="alias" value="/camel/rest"/>
+        <property name="httpService" ref="httpService"/>
+        <property name="servlet" ref="camelServlet"/>
+    </bean>
+
+    <bean id="camelServlet" class="org.apache.camel.component.servlet.CamelHttpTransportServlet"/>
 
 </blueprint>

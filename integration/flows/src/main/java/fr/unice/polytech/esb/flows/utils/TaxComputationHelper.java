@@ -13,7 +13,7 @@ public class TaxComputationHelper {
 
     public String buildSimpleRequest(TaxInfo i, String uuid) {
         StringBuilder builder = new StringBuilder();
-        builder.append("<cook:simple xmlns:cook=\"http://cookbook.soa1.polytech.unice.fr/\">\n");
+        builder.append("<cook:simple xmlns:cook=\"http://informatique.polytech.unice.fr/soa1/cookbook/\">\n");
         builder.append("  <simpleTaxInfo>\n");
         builder.append("    <id>"     + uuid          + "</id>\n");
         builder.append("    <income>" + i.getForm().getIncome() + "</income>\n");
@@ -24,7 +24,7 @@ public class TaxComputationHelper {
 
     public String buildAdvancedRequest(TaxInfo i, String uuid) {
         StringBuilder builder = new StringBuilder();
-        builder.append("<cook:complex xmlns:cook=\"http://cookbook.soa1.polytech.unice.fr/\">\n");
+        builder.append("<cook:complex xmlns:cook=\"http://informatique.polytech.unice.fr/soa1/cookbook/\">\n");
         builder.append("  <complexTaxInfo>\n");
         builder.append("    <id>"     + uuid           + "</id>\n");
         builder.append("    <income>" + i.getForm().getIncome()  + "</income>\n");

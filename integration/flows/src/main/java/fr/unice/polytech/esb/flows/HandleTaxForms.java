@@ -45,14 +45,14 @@ public class HandleTaxForms extends RouteBuilder {
                 .setProperty("partial-tax-info", simple("${body}"))
                 .inOut(GET_ANONYMOUS_ID)
                 .setHeader("req-uuid", simple("${body}"))
-
                 .setBody(simple("${exchangeProperty[partial-tax-info]}"))
+                .log("routing tax computation for ${body} / ${header[req-uuid]}")
                 .choice()
                     .when(simple("${body.form.income} >= 42000"))
-                        .setProperty("tax-comp-method", constant("COMPLEX"))
+                        .setHeader("tax-comp-method", constant("COMPLEX"))
                         .inOut(TAX_COMPUTE_COMPLEX)
                     .when(simple("${body.form.income} >= 0 && ${body.form.income} < 42000"))
-                        .setProperty("tax-comp-method", constant("SIMPLE"))
+                        .setHeader("tax-comp-method", constant("SIMPLE"))
                         .inOut(TAX_COMPUTE_SIMPLE)
                     .otherwise()
                         .to(BAD_CITIZEN).stop() // stopping the route for bad citizens
@@ -60,6 +60,15 @@ public class HandleTaxForms extends RouteBuilder {
                 .bean(TaxComputationHelper.class,
                         "consolidateResponse(${body}, ${exchangeProperty[partial-tax-info]})")
                 .removeProperty("partial-tax-info")
+        ;
+
+        from(TAX_FORM_TO_COMPUTE)
+                .routeId("compute-taxes-from-taxform")
+                .routeDescription("consumes a tax form and produces the associated tax info")
+
+                .inOut(BUILD_TAX_INFO)
+                .inOut(COMPUTE_TAXES)
+                .log("Result: ${body}")
         ;
 
     }

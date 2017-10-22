@@ -4,6 +4,7 @@ import fr.unice.polytech.esb.flows.data.Person;
 import fr.unice.polytech.esb.flows.data.TaxInfo;
 import fr.unice.polytech.esb.flows.utils.TaxComputationHelper;
 import org.apache.camel.Exchange;
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
@@ -51,6 +52,7 @@ public class CallExternalPartners extends RouteBuilder {
                 .routeId("simple-tax-computation-call")
                 .routeDescription("Call the tax computation service using the simple method")
 
+                .log("Computing taxes using SIMPLE method for ${body}")
                 .bean(TaxComputationHelper.class, "buildSimpleRequest(${body}, ${header[req-uuid]})")
                 .inOut(TAX_COMPUTATION)
 
@@ -60,6 +62,7 @@ public class CallExternalPartners extends RouteBuilder {
                 .routeId("complex-tax-computation-call")
                 .routeDescription("Call the tax computation service using the complex method")
 
+                .log("Computing taxes using COMPLEX method for ${body}")
                 .bean(TaxComputationHelper.class, "buildAdvancedRequest(${body}, ${header[req-uuid]})")
                 .inOut(TAX_COMPUTATION)
         ;
@@ -72,6 +75,7 @@ public class CallExternalPartners extends RouteBuilder {
                 .routeId("create-anonymous-generator")
                 .routeDescription("Create an anonymous generator")
 
+                .log("Creating an anonymizer")
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader("Content-Type", constant("text/plain"))
                 .setHeader("Accept", constant("application/json"))
@@ -79,7 +83,7 @@ public class CallExternalPartners extends RouteBuilder {
                 .setProperty("gen-name", simple("gen-${exchangeId}"))
                 .setBody(simple("${exchangeProperty[gen-name]}"))
                 .to(GENERATOR_ENDPOINT)
-                .setBody(simple(GENERATOR_ENDPOINT + "/${exchangeProperty[gen-name]}"))
+                .setBody(simple(GENERATOR_ENDPOINT.replace("http:", "http://") + "/${exchangeProperty[gen-name]}"))
                 .removeProperty("gen-name")
         ;
 
@@ -87,14 +91,18 @@ public class CallExternalPartners extends RouteBuilder {
                 .routeId("compute-anonymous-id")
                 .routeDescription("Obtain an anonymous ID from the ID generator")
 
+                .log("Obtaining an UUID from ${header[citizen-id-gen]}")
                 .setHeader(Exchange.HTTP_METHOD, constant("GET"))
                 .setHeader("Content-Type", constant("application/json"))
                 .setHeader("Accept", constant("application/json"))
                 // Using a dynamic endpoint => refer to a recipient list, inOut as an endpoint parameter
-                .recipientList(simple("${header[citizen-id-gen]}?exchangePattern=InOut"))
+                .setBody(simple(""))
+                //.setExchangePattern(ExchangePattern.InOut)
+                .recipientList(simple("${header[citizen-id-gen]}"))
+                //.setExchangePattern(ExchangePattern.InOnly)
                 .unmarshal().json(JsonLibrary.Jackson, String.class)
+                .log("UUID: ${body}")
         ;
-
 
 
     }
